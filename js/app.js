@@ -1,6 +1,17 @@
 (function (window) {
 	'use strict';
-
+// 设置用于筛选不同类别事项的函数，并统一存储。
+let filter = {
+	all (todos){
+		return todos
+	},
+	active (todos) {
+		return todos.filter(todo=>!todo.completed)
+	},
+	completed (todos) {
+		return todos.filter(todo=>todo.completed)
+	}
+}
 	// Your starting point. Enjoy the ride!
 	new Vue({
 		el: '#app',
@@ -12,7 +23,14 @@
 				{id:3,title:'示例内容3',completed:false}
 			],
 			//存储新增输入框数据
-			newTodo:''
+			newTodo: '',
+			//展示的todos
+			// allTodos : this.todos,
+			editingTodo: null,
+			titileBeforeEdit: '',
+			// 事件类型状态
+			todoType: 'all'
+
 		},
 		methods:{
 			// pluralize: function(){
@@ -35,8 +53,26 @@
 				// this.todos.splice(index,1);
 			},
 			removeAllCompleted(){
-				 this.todos=this.todos.filter(todo=>{return !todo.completed})
+				 this.todos =  this.todos.filter(todo=>{return !todo.completed})
+			},
+
+			editTodo(todo){
+				this.editingTodo  = todo;
+				this.titileBeforeEdit = todo.title
+			},
+			cancelEdit(todo){
+				this.editingTodo = null;
+				todo.title = this.titileBeforeEdit;
+			},
+			editDone(todo){
+				this.editingTodo = null;
+				if(todo.title){
+					todo.title = todo.title.trim()
+				}else{
+					this.removeTodo(todo)
+				}
 			}
+
 		},
 		computed:{
 			// 用于获取剩余待办事项数
@@ -59,8 +95,19 @@
 						todo.completed = value
 					});
 				}
+			},
+			filteredTodo () {
+				return filter[this.todoType](this.todos)
 			}
 
+		},
+		directives:{
+			'todo-focus'(el,binding){
+				// console.log(binding.value)
+				if(binding.value){
+					el.focus();
+				}
+			}
 		}
 
 	})

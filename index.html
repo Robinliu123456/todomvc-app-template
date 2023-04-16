@@ -35,13 +35,15 @@
 					</div>
 					<input class="edit" value="Create a TodoMVC template">
 				</li> -->
-				<li v-for="todo in todos" :key="todo.id" :class="{completed:todo.completed}">
+				<li v-for="todo in filteredTodo" :key="todo.id"
+					:class="{completed:todo.completed, editing: todo === editingTodo}">
 					<div class="view">
 						<input class="toggle" type="checkbox" v-model="todo.completed">
-						<label>{{todo.title}}</label>
+						<label @dblclick="editTodo(todo)">{{todo.title}}</label>
 						<button class="destroy" @click="removeTodo(todo)"></button>
 					</div>
-					<input class="edit" value="Create a TodoMVC template">
+					<input class="edit" v-model="todo.title" v-todo-focus="todo===editingTodo" @keyup.esc="cancelEdit(todo)"
+						@dblclick="cancelEdit(todo)" @blur="editDone(todo)" @keyup.enter="editDone(todo)">
 				</li>
 				<!-- 待办事项 -->
 				<!-- <li>
@@ -59,19 +61,21 @@
 			<!-- This should be `0 items left` by default -->
 			<span class="todo-count"><strong>{{remaining}}</strong> {{pluralize()}} left</span>
 			<!-- Remove this if you don't implement routing -->
+			<!-- 用于事件筛选功能 -->
 			<ul class="filters">
 				<li>
-					<a class="selected" href="#/">All</a>
+					<a href="javascript:;" :class="{selected:todoType === 'all'}" @click="todoType='all'">All</a>
 				</li>
 				<li>
-					<a href="#/active">Active</a>
+					<a href="javascript:;" :class="{selected:todoType === 'active'}" @click="todoType='active'">Active</a>
 				</li>
 				<li>
-					<a href="#/completed">Completed</a>
+					<a href="javascript:;" :class="{selected:todoType === 'completed'}"
+						@click="todoType='completed'">Completed</a>
 				</li>
 			</ul>
 			<!-- Hidden if no completed items are left ↓ -->
-			<button class="clear-completed" v-show="todos.length > remaining" @click="removeAllCompleted()">Clear
+			<button class=" clear-completed" v-show="todos.length > remaining" @click="removeAllCompleted()">Clear
 				completed</button>
 		</footer>
 	</section>
