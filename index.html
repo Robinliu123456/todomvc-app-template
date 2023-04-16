@@ -17,11 +17,11 @@
 		<!-- 输入框区域 -->
 		<header class="header">
 			<h1>todosVue2</h1>
-			<input class="new-todo" placeholder="What needs to be done?" autofocus>
+			<input class="new-todo" placeholder="What needs to be done?" autofocus v-model="newTodo" @keyup.enter="addTodo">
 		</header>
 		<!-- 事项列表区域 -->
 		<section class="main" v-show="todos.length">
-			<input id="toggle-all" class="toggle-all" type="checkbox">
+			<input id="toggle-all" class="toggle-all" type="checkbox" v-model="allDone">
 			<label for="toggle-all">Mark all as complete</label>
 			<ul class="todo-list">
 				<!-- These are here just to show the structure of the list items -->
@@ -39,7 +39,7 @@
 					<div class="view">
 						<input class="toggle" type="checkbox" v-model="todo.completed">
 						<label>{{todo.title}}</label>
-						<button class="destroy"></button>
+						<button class="destroy" @click="removeTodo(todo)"></button>
 					</div>
 					<input class="edit" value="Create a TodoMVC template">
 				</li>
@@ -71,7 +71,8 @@
 				</li>
 			</ul>
 			<!-- Hidden if no completed items are left ↓ -->
-			<button class="clear-completed">Clear completed</button>
+			<button class="clear-completed" v-show="todos.length > remaining" @click="removeAllCompleted()">Clear
+				completed</button>
 		</footer>
 	</section>
 	<footer class="info">
